@@ -41,7 +41,7 @@ public class Main {
            do {
         	   linea = bRLectura.readLine();
 			if (linea!=null) {
-				System.out.println(linea);
+				//System.out.println(linea);
 				String partesInstruccion[]=linea.split(";");
 				for (int i = 0; i < partesInstruccion.length; i++) {
 					validarInstruccion(partesInstruccion[i]);
@@ -58,8 +58,10 @@ public class Main {
         }
 	}
 	
-	public boolean validarInstruccion(String instruccion){
-		System.out.println("\n"+instruccion);
+	public boolean validarInstruccion(String instrucciones){
+		//System.out.println("\n"+instrucciones);
+		//Eliminar todos los espacios
+		String instruccion=instrucciones.replace(" ", "");
 		Pattern pat = Pattern.compile("[0-9]{4}/[0-9]{1}/[0-9]{1}/[0-9]{3}/[0-9]{3}/[0-9]{1}");
 		Matcher mat = pat.matcher(instruccion);
 		if (!mat.matches()) {
