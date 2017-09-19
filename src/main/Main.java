@@ -61,16 +61,39 @@ public class Main {
 	public boolean validarInstruccion(String instrucciones){
 		//System.out.println("\n"+instrucciones);
 		//Eliminar todos los espacios
+		
+		boolean validacion;
 		String instruccion=instrucciones.replace(" ", "");
-		Pattern pat = Pattern.compile("[0-9]{4}/[0-9]{1}/[0-9]{1}/[0-9]{3}/[0-9]{3}/[0-9]{1}");
+		/*partesInstruccion[0]=id del proceso
+		 *partesInstruccion[1]=estado del proceso
+		 *partesInstruccion[2]=prioridad
+		 *partesInstruccion[3]=cantidad de instrucciones
+		 *partesInstruccion[4]=instruccion de bloqueo
+		 *partesInstruccion[5]=evento que genera el bloqueo
+		*/
+		String partesInstruccion[]=instruccion.split("/");
+	
+		
+		//Pattern pat = Pattern.compile("[0-9]{4}/[0-9]{1}/[0-9]{1}/[0-9]{3}/[0-9]{3}/[0-9]{1}");
+		Pattern pat = Pattern.compile("[0-9]{4}/[0-4]{1}/[1-3]{1}/[0-9]{3}/[0-9]{3}/[3,5]{1}");
 		Matcher mat = pat.matcher(instruccion);
 		if (!mat.matches()) {
 			System.err.println("Instruccion invalida: " + instruccion);
-			return false;
+			validacion=false;
 		} else {
-			System.out.println("Instruccion Valida: " + instruccion);
-			return true;
+			if(Integer.parseInt(partesInstruccion[4])>Integer.parseInt(partesInstruccion[3])) {
+				System.err.println("Instruccion invalida: " + instruccion);
+				validacion=false;
+			}else {
+				System.out.println("Instruccion valida: " + instruccion);
+				validacion=true;
+			}
+				
+			
+		
 		}
+		
+		return validacion;
 	}
 }
 

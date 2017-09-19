@@ -9,7 +9,7 @@ public class Process {
 	private int bloqueadoProceso;
 	private int eventoEspera;
 	private int lectura;
-	private int eventolectura;
+	private int eventoLectura;
 	
 	public Process(int idProceso, int estadoProceso, int prioridad, int cantidadInstrucciones, int bloqueadoProceso,
 			int eventoEspera,int lectura,int eventolectura) {
@@ -20,7 +20,7 @@ public class Process {
 		this.bloqueadoProceso = bloqueadoProceso;
 		this.eventoEspera = eventoEspera;
 		this.lectura = lectura;
-		this.eventolectura = eventolectura;
+		this.eventoLectura = eventolectura;
 	}
 	
 	public Process() {
@@ -69,10 +69,10 @@ public class Process {
 		this.lectura = lectura;
 	}
 	public int getEventoLectura() {
-		return eventolectura;
+		return eventoLectura;
 	}
 	public void setEventoLectura(int eventolectura) {
-		this.eventolectura = eventolectura;
+		this.eventoLectura = eventolectura;
 	}
 	
 	
@@ -80,18 +80,18 @@ public class Process {
 	public String toString() {
 		return  "Proceso: "+idProceso + " Estado: " + estadoProceso + " Prioridad: " + prioridad
 				+ " C.Intrucciones: " + cantidadInstrucciones + " I.Bloqueo :" + bloqueadoProceso
-				+ " E.Espera: " + eventoEspera +" U.Intruccion: "+lectura+ " C.I.Restante: "+eventolectura;
+				+ " E.Espera: " + eventoEspera +" U.Intruccion: "+lectura+ " C.I.Restante: "+eventoLectura;
 	}
 	
-	//---------ORDENA LOS PROCESOS POR PRIORIDAD---------------------/
-	public int compareTo(Process o) {
-        if (prioridad > o.getPrioridad()) {
-            return 1;
-        } else if (prioridad < o.getPrioridad()) {
-            return -1;
-        } else {
-            return 0;
-        }
-    }
+//	//---------ORDENA LOS PROCESOS POR PRIORIDAD---------------------/
+//	public int compareTo(Process o) {
+//        if (prioridad > o.getPrioridad()) {
+//            return 1;
+//        } else if (prioridad < o.getPrioridad()) {
+//            return -1;
+//        } else {
+//            return 0;
+//        }
+//    }
 	
 }
