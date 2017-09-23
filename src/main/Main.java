@@ -3,18 +3,26 @@ package main;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import javax.swing.JFileChooser;
+import process.Procesos;
+
 
 public class Main {
 	private FileReader flujoLectura;
 	private BufferedReader bRLectura;
 	private String linea;
-	
+	private List<Procesos> proceso= new LinkedList<Procesos>();
 	public Main() {
 		importarInstrucciones();
+		System.out.println(proceso);
 	}
 
 	
@@ -87,12 +95,33 @@ public class Main {
 			}else {
 				System.out.println("Instruccion valida: " + instruccion);
 				validacion=true;
+				ordenar(partesInstruccion);
 			}
 				
 		}
 		
 		return validacion;
 	}
+
+	public void ordenar(String partes[]) {
+		int id= Integer.parseInt(partes[0]);
+		int estado=Integer.parseInt(partes[1]);
+		int prioridad= Integer.parseInt(partes[2]);
+		int cantInstrucciones= Integer.parseInt(partes[3]);
+		int instruccionBloqueo= Integer.parseInt(partes[4]);
+		int evento= Integer.parseInt(partes[5]);
+
+		proceso.add(new Procesos(id,estado,prioridad,cantInstrucciones,instruccionBloqueo,evento)); 
+		
+		Collections.sort(proceso, new Comparator<Procesos>() {
+
+	        public int compare(Procesos p1, Procesos p2) {
+	            return p1.getPrioridad() - p2.getPrioridad();
+	        }
+	    });
+		
+	}
+	
 }
 
 	

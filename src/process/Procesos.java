@@ -1,31 +1,29 @@
 package process;
 
 
-public class Process {
+public class Procesos {
 	private int idProceso;
 	private int estadoProceso;
 	private int prioridad;
 	private int cantidadInstrucciones;
 	private int bloqueadoProceso;
 	private int eventoEspera;
-	private int lectura;
-	private int eventoLectura;
 	
-	public Process(int idProceso, int estadoProceso, int prioridad, int cantidadInstrucciones, int bloqueadoProceso,
-			int eventoEspera,int lectura,int eventolectura) {
+	public Procesos() {
+		super();
+		}
+
+	public Procesos(int idProceso, int estadoProceso, int prioridad, int cantidadInstrucciones, int bloqueadoProceso,
+			int eventoEspera) {
+		super();
 		this.idProceso = idProceso;
 		this.estadoProceso = estadoProceso;
 		this.prioridad = prioridad;
 		this.cantidadInstrucciones = cantidadInstrucciones;
 		this.bloqueadoProceso = bloqueadoProceso;
 		this.eventoEspera = eventoEspera;
-		this.lectura = lectura;
-		this.eventoLectura = eventolectura;
 	}
 	
-	public Process() {
-	}
-
 	public int getIdProceso() {
 		return idProceso;
 	}
@@ -62,25 +60,11 @@ public class Process {
 	public void setEventoEspera(int eventoEspera) {
 		this.eventoEspera = eventoEspera;
 	}
-	public int getLectura() {
-		return lectura;
-	}
-	public void setLectura(int lectura) {
-		this.lectura = lectura;
-	}
-	public int getEventoLectura() {
-		return eventoLectura;
-	}
-	public void setEventoLectura(int eventolectura) {
-		this.eventoLectura = eventolectura;
-	}
-	
-	
 	@Override
 	public String toString() {
-		return  "Proceso: "+idProceso + " Estado: " + estadoProceso + " Prioridad: " + prioridad
-				+ " C.Intrucciones: " + cantidadInstrucciones + " I.Bloqueo :" + bloqueadoProceso
-				+ " E.Espera: " + eventoEspera +" U.Intruccion: "+lectura+ " C.I.Restante: "+eventoLectura;
+		return "Proceso [idProceso=" + idProceso + ", estadoProceso=" + estadoProceso + ", prioridad=" + prioridad
+				+ ", cantidadInstrucciones=" + cantidadInstrucciones + ", bloqueadoProceso=" + bloqueadoProceso
+				+ ", eventoEspera=" + eventoEspera + "]" + "\n";
 	}
 	
 //	//---------ORDENA LOS PROCESOS POR PRIORIDAD---------------------/
@@ -94,4 +78,5 @@ public class Process {
 //        }
 //    }
 	
+
 }
