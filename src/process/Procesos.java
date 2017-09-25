@@ -6,22 +6,26 @@ public class Procesos {
 	private int estadoProceso;
 	private int prioridad;
 	private int cantidadInstrucciones;
-	private int bloqueadoProceso;
-	private int eventoEspera;
+	private int instruccionBloqueo;
+	private int eventoBloqueo;
 	
 	public Procesos() {
 		super();
 		}
 
-	public Procesos(int idProceso, int estadoProceso, int prioridad, int cantidadInstrucciones, int bloqueadoProceso,
+	public Procesos(int idProceso,
+			int estadoProceso, 
+			int prioridad,
+			int cantidadInstrucciones,
+			int bloqueadoProceso,
 			int eventoEspera) {
 		super();
 		this.idProceso = idProceso;
 		this.estadoProceso = estadoProceso;
 		this.prioridad = prioridad;
 		this.cantidadInstrucciones = cantidadInstrucciones;
-		this.bloqueadoProceso = bloqueadoProceso;
-		this.eventoEspera = eventoEspera;
+		this.instruccionBloqueo = bloqueadoProceso;
+		this.eventoBloqueo = eventoEspera;
 	}
 	
 	public int getIdProceso() {
@@ -49,34 +53,24 @@ public class Procesos {
 		this.cantidadInstrucciones = cantidadInstrucciones;
 	}
 	public int getBloqueadoProceso() {
-		return bloqueadoProceso;
+		return instruccionBloqueo;
 	}
 	public void setBloqueadoProceso(int bloqueadoProceso) {
-		this.bloqueadoProceso = bloqueadoProceso;
+		this.instruccionBloqueo = bloqueadoProceso;
 	}
 	public int getEventoEspera() {
-		return eventoEspera;
+		return eventoBloqueo;
 	}
 	public void setEventoEspera(int eventoEspera) {
-		this.eventoEspera = eventoEspera;
+		this.eventoBloqueo = eventoEspera;
 	}
 	@Override
 	public String toString() {
 		return "Proceso [idProceso=" + idProceso + ", estadoProceso=" + estadoProceso + ", prioridad=" + prioridad
-				+ ", cantidadInstrucciones=" + cantidadInstrucciones + ", bloqueadoProceso=" + bloqueadoProceso
-				+ ", eventoEspera=" + eventoEspera + "]" + "\n";
+				+ ", cantidadInstrucciones=" + cantidadInstrucciones + ", bloqueadoProceso=" + instruccionBloqueo
+				+ ", eventoEspera=" + eventoBloqueo + "]" + "\n";
 	}
 	
-//	//---------ORDENA LOS PROCESOS POR PRIORIDAD---------------------/
-//	public int compareTo(Process o) {
-//        if (prioridad > o.getPrioridad()) {
-//            return 1;
-//        } else if (prioridad < o.getPrioridad()) {
-//            return -1;
-//        } else {
-//            return 0;
-//        }
-//    }
-	
+
 
 }

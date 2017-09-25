@@ -19,10 +19,14 @@ public class Main {
 	private FileReader flujoLectura;
 	private BufferedReader bRLectura;
 	private String linea;
-	private List<Procesos> proceso= new LinkedList<Procesos>();
+	private List<String> ids= new LinkedList<String>();
+	private List<Procesos> procesosPrioridad1= new LinkedList<Procesos>();
+	private List<Procesos> procesosPrioridad2= new LinkedList<Procesos>();
+	private List<Procesos> procesosPrioridad3= new LinkedList<Procesos>();
 	public Main() {
 		importarInstrucciones();
-		System.out.println(proceso);
+		infoProcesos();
+		
 	}
 
 	
@@ -86,14 +90,14 @@ public class Main {
 		Pattern pat = Pattern.compile("[0-9]{4}/[0-4]{1}/[1-3]{1}/[0-9]{3}/[0-9]{3}/[3,5]{1}");
 		Matcher mat = pat.matcher(instruccion);
 		if (!mat.matches()) {
-			System.err.println("Instruccion invalida: " + instruccion);
+			//System.err.println("Instruccion invalida: " + instruccion +" error patron invalido");
 			validacion=false;
 		} else {
 			if(Integer.parseInt(partesInstruccion[4])>Integer.parseInt(partesInstruccion[3])) {
-				System.err.println("Instruccion invalida: " + instruccion);
+				//System.err.println("Instruccion invalida: " + instruccion + " error instruccion de bloqueo mayor a la cantidad de instrucciones");
 				validacion=false;
 			}else {
-				System.out.println("Instruccion valida: " + instruccion);
+//				System.out.println("Instruccion valida: " + instruccion);
 				validacion=true;
 				ordenar(partesInstruccion);
 			}
@@ -104,22 +108,81 @@ public class Main {
 	}
 
 	public void ordenar(String partes[]) {
-		int id= Integer.parseInt(partes[0]);
-		int estado=Integer.parseInt(partes[1]);
-		int prioridad= Integer.parseInt(partes[2]);
-		int cantInstrucciones= Integer.parseInt(partes[3]);
-		int instruccionBloqueo= Integer.parseInt(partes[4]);
-		int evento= Integer.parseInt(partes[5]);
-
-		proceso.add(new Procesos(id,estado,prioridad,cantInstrucciones,instruccionBloqueo,evento)); 
+		//Validar id antes de meterlo a las listas de procesos
+		String id =partes[0];
+		ids.add(id);
+		int contadorId=0;//si contadorId>=2 entonces el proceso no se podra meter en ninguna lista
+		for (int i = 0; i < ids.size(); i++) {
+			if (id.equals(ids.get(i))) {
+				contadorId++;
+			}
+		}
 		
-		Collections.sort(proceso, new Comparator<Procesos>() {
+		if(contadorId<=1){
+			//Lista Prioridad 1 
+			if(partes[2].equals("1")) {
+				procesosPrioridad1.add(new Procesos(
+						Integer.parseInt(partes[0]),
+						Integer.parseInt(partes[1]),
+						Integer.parseInt(partes[2]),
+						Integer.parseInt(partes[3]),
+						Integer.parseInt(partes[4]),
+						Integer.parseInt(partes[5])
+				 )); 
+				
+			}
+			
+			//Lista Prioridad 2
+			if(partes[2].equals("2")) {
+				procesosPrioridad2.add(new Procesos(
+						Integer.parseInt(partes[0]),
+						Integer.parseInt(partes[1]),
+						Integer.parseInt(partes[2]),
+						Integer.parseInt(partes[3]),
+						Integer.parseInt(partes[4]),
+						Integer.parseInt(partes[5])
+				 )); 
+			}
+			
+			//Lista Prioridad 3
+			if(partes[2].equals("3")) {
+				procesosPrioridad3.add(new Procesos(
+						Integer.parseInt(partes[0]),
+						Integer.parseInt(partes[1]),
+						Integer.parseInt(partes[2]),
+						Integer.parseInt(partes[3]),
+						Integer.parseInt(partes[4]),
+						Integer.parseInt(partes[5])
+				 )); 
+			}
+		}
+		
+		
+		
+		/*Collections.sort(procesoValidos, new Comparator<Procesos>() {
 
 	        public int compare(Procesos p1, Procesos p2) {
 	            return p1.getPrioridad() - p2.getPrioridad();
 	        }
-	    });
+	    });*/
 		
+	}
+	
+	
+	
+	public void infoProcesos(){
+		System.out.println("\n"+"------Prioridad 1-------"+"\n");
+		for (int i = 0; i < procesosPrioridad1.size(); i++) {
+			System.out.println(procesosPrioridad1.get(i));
+		}
+		System.out.println("\n"+"------Prioridad 2-------"+"\n");
+		for (int i = 0; i < procesosPrioridad2.size(); i++) {
+			System.out.println(procesosPrioridad2.get(i));
+		}
+		System.out.println("\n"+"------Prioridad 3-------"+"\n");
+		for (int i = 0; i < procesosPrioridad3.size(); i++) {
+			System.out.println(procesosPrioridad3.get(i));
+		}
 	}
 	
 }
