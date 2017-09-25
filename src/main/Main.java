@@ -1,18 +1,14 @@
 package main;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.swing.JFileChooser;
+
 import process.Procesos;
+import process.ProcesosInvalido;
 
 
 public class Main {
@@ -23,9 +19,12 @@ public class Main {
 	private List<Procesos> procesosPrioridad1= new LinkedList<Procesos>();
 	private List<Procesos> procesosPrioridad2= new LinkedList<Procesos>();
 	private List<Procesos> procesosPrioridad3= new LinkedList<Procesos>();
+	private List<ProcesosInvalido> procesosInvalidos= new LinkedList<ProcesosInvalido>();
+	
 	public Main() {
 		importarInstrucciones();
-		infoProcesos();
+		infoProcesosValidos();
+		//infoProcesosInvalidos();
 		
 	}
 
@@ -91,15 +90,18 @@ public class Main {
 		Matcher mat = pat.matcher(instruccion);
 		if (!mat.matches()) {
 			//System.err.println("Instruccion invalida: " + instruccion +" error patron invalido");
+			asignarProcesoInvalido(instruccion,"Error Patron invalido");
 			validacion=false;
+			
 		} else {
 			if(Integer.parseInt(partesInstruccion[4])>Integer.parseInt(partesInstruccion[3])) {
 				//System.err.println("Instruccion invalida: " + instruccion + " error instruccion de bloqueo mayor a la cantidad de instrucciones");
+				asignarProcesoInvalido(instruccion,"IntruccionDeBloque>CantidadDeInstrucciones");
 				validacion=false;
 			}else {
-//				System.out.println("Instruccion valida: " + instruccion);
+     			//System.out.println("Instruccion valida: " + instruccion);
 				validacion=true;
-				ordenar(partesInstruccion);
+				ordenar(partesInstruccion,instruccion);
 			}
 				
 		}
@@ -107,7 +109,7 @@ public class Main {
 		return validacion;
 	}
 
-	public void ordenar(String partes[]) {
+	public void ordenar(String partes[],String instruccion) {
 		//Validar id antes de meterlo a las listas de procesos
 		String id =partes[0];
 		ids.add(id);
@@ -127,7 +129,8 @@ public class Main {
 						Integer.parseInt(partes[2]),
 						Integer.parseInt(partes[3]),
 						Integer.parseInt(partes[4]),
-						Integer.parseInt(partes[5])
+						Integer.parseInt(partes[5]),
+						null
 				 )); 
 				
 			}
@@ -140,7 +143,8 @@ public class Main {
 						Integer.parseInt(partes[2]),
 						Integer.parseInt(partes[3]),
 						Integer.parseInt(partes[4]),
-						Integer.parseInt(partes[5])
+						Integer.parseInt(partes[5]),
+						null
 				 )); 
 			}
 			
@@ -152,9 +156,12 @@ public class Main {
 						Integer.parseInt(partes[2]),
 						Integer.parseInt(partes[3]),
 						Integer.parseInt(partes[4]),
-						Integer.parseInt(partes[5])
+						Integer.parseInt(partes[5]),
+						null
 				 )); 
 			}
+		}else{
+			asignarProcesoInvalido(instruccion,"id repetido");
 		}
 		
 		
@@ -170,7 +177,7 @@ public class Main {
 	
 	
 	
-	public void infoProcesos(){
+	public void infoProcesosValidos(){
 		System.out.println("\n"+"------Prioridad 1-------"+"\n");
 		for (int i = 0; i < procesosPrioridad1.size(); i++) {
 			System.out.println(procesosPrioridad1.get(i));
@@ -183,6 +190,18 @@ public class Main {
 		for (int i = 0; i < procesosPrioridad3.size(); i++) {
 			System.out.println(procesosPrioridad3.get(i));
 		}
+	}
+	
+	public void asignarProcesoInvalido(String instruccion,String infoAdicional){
+		procesosInvalidos.add(new ProcesosInvalido(instruccion,infoAdicional)); 
+	}
+	
+	public void infoProcesosInvalidos(){
+		System.out.println("\n---------------Procesos Invalidos------------------\n");
+		for (int i = 0; i < procesosInvalidos.size(); i++) {
+			System.err.println(procesosInvalidos.get(i).toString());
+		}
+		
 	}
 	
 }

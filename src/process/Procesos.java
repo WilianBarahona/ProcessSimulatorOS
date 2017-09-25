@@ -8,6 +8,7 @@ public class Procesos {
 	private int cantidadInstrucciones;
 	private int instruccionBloqueo;
 	private int eventoBloqueo;
+	private String infoAdicional;
 	
 	public Procesos() {
 		super();
@@ -18,7 +19,8 @@ public class Procesos {
 			int prioridad,
 			int cantidadInstrucciones,
 			int bloqueadoProceso,
-			int eventoEspera) {
+			int eventoEspera,
+			String infoAdicional) {
 		super();
 		this.idProceso = idProceso;
 		this.estadoProceso = estadoProceso;
@@ -26,6 +28,7 @@ public class Procesos {
 		this.cantidadInstrucciones = cantidadInstrucciones;
 		this.instruccionBloqueo = bloqueadoProceso;
 		this.eventoBloqueo = eventoEspera;
+		this.infoAdicional=infoAdicional;
 	}
 	
 	public int getIdProceso() {
@@ -64,11 +67,28 @@ public class Procesos {
 	public void setEventoEspera(int eventoEspera) {
 		this.eventoBloqueo = eventoEspera;
 	}
+	
+	public int getEventoBloqueo() {
+		return eventoBloqueo;
+	}
+
+	public void setEventoBloqueo(int eventoBloqueo) {
+		this.eventoBloqueo = eventoBloqueo;
+	}
+
+	public String getInfoAdicional() {
+		return infoAdicional;
+	}
+
+	public void setInfoAdicional(String infoAdicional) {
+		this.infoAdicional = infoAdicional;
+	}
+
 	@Override
 	public String toString() {
 		return "Proceso [idProceso=" + idProceso + ", estadoProceso=" + estadoProceso + ", prioridad=" + prioridad
 				+ ", cantidadInstrucciones=" + cantidadInstrucciones + ", bloqueadoProceso=" + instruccionBloqueo
-				+ ", eventoEspera=" + eventoBloqueo + "]" + "\n";
+				+ ", eventoEspera=" + eventoBloqueo + ", infoAdicional=" + infoAdicional+"]" + "\n";
 	}
 	
 
