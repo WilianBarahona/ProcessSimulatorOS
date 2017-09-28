@@ -15,6 +15,7 @@ public class Main {
 	private FileReader flujoLectura;
 	private BufferedReader bRLectura;
 	private String linea;
+	private String cadenaInstrucciones;
 	private List<String> ids= new LinkedList<String>();
 	private List<Procesos> procesosPrioridad1= new LinkedList<Procesos>();
 	private List<Procesos> procesosPrioridad2= new LinkedList<Procesos>();
@@ -24,7 +25,7 @@ public class Main {
 	public Main() {
 		importarInstrucciones();
 		infoProcesosValidos();
-		//infoProcesosInvalidos();
+		infoProcesosInvalidos();
 		
 	}
 
@@ -35,6 +36,7 @@ public class Main {
 	}
 	public void importarInstrucciones(){
 		
+		cadenaInstrucciones="";
 		/*-----------Para usar el buscador de archivo descomentar las siguientes lineas------*/
         /*JFileChooser buscador= new JFileChooser();
         buscador.setApproveButtonText("Seleccionar");
@@ -52,12 +54,7 @@ public class Main {
            do {
         	   linea = bRLectura.readLine();
 			if (linea!=null) {
-				//System.out.println(linea);
-				String partesInstruccion[]=linea.split(";");
-				for (int i = 0; i < partesInstruccion.length; i++) {
-					validarInstruccion(partesInstruccion[i]);
-				}
-				
+				cadenaInstrucciones+=linea;	
 			}
 			
 		} while (linea!=null);
@@ -67,6 +64,14 @@ public class Main {
         }catch(Exception ex){
 
         }
+        
+        /*Enviar todas las intrucciones en una sola linea para poder eliminar posibles saltos de lineas
+        entre instrucciones*/
+        String partesInstruccion[]=cadenaInstrucciones.split(";");
+		for (int i = 0; i < partesInstruccion.length; i++) {
+			validarInstruccion(partesInstruccion[i]);
+		}
+		
 	}
 	
 	public boolean validarInstruccion(String instrucciones){
