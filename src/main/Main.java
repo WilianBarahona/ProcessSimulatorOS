@@ -21,12 +21,13 @@ public class Main {
 	private List<Procesos> procesosPrioridad2= new LinkedList<Procesos>();
 	private List<Procesos> procesosPrioridad3= new LinkedList<Procesos>();
 	private List<ProcesosInvalido> procesosInvalidos= new LinkedList<ProcesosInvalido>();
+	private List<Procesos> segmentos= new LinkedList<Procesos>();
 	
 	public Main() {
 		importarInstrucciones();
-		infoProcesosValidos();
-		infoProcesosInvalidos();
-		
+		//infoProcesosValidos();
+	//	infoProcesosInvalidos();
+		ejecutar();
 	}
 
 	
@@ -135,7 +136,7 @@ public class Main {
 						Integer.parseInt(partes[3]),
 						Integer.parseInt(partes[4]),
 						Integer.parseInt(partes[5]),
-						null
+						0
 				 )); 
 				
 			}
@@ -149,7 +150,7 @@ public class Main {
 						Integer.parseInt(partes[3]),
 						Integer.parseInt(partes[4]),
 						Integer.parseInt(partes[5]),
-						null
+						0
 				 )); 
 			}
 			
@@ -162,7 +163,7 @@ public class Main {
 						Integer.parseInt(partes[3]),
 						Integer.parseInt(partes[4]),
 						Integer.parseInt(partes[5]),
-						null
+						0
 				 )); 
 			}
 		}else{
@@ -208,7 +209,52 @@ public class Main {
 		}
 		
 	}
+	public void ejecutar() {
+		System.out.println("Ejecutando el metodo ejecutar de la lista 1\n");
+		int contador = 0;
+		int b = 0;
+		while(!procesosPrioridad1.isEmpty()) {
+			Procesos a=procesosPrioridad1.remove(contador);
+			if(a.getInfoAdicional()>=0 && a.getInfoAdicional()<=4) {
+				//Busqueda en segmentos (arreglo que contiene los que han entrado al FOR osea disminucion de instrucciones)
+				if(buscar(a,segmentos)==false) {
+					//No ha entrado al ciclo FOR
+					b= a.getInfoAdicional()+1;
+					a.setInfoAdicional(b);
+					int instrucciones = a.getCantidadInstrucciones();
+					if(instrucciones > 0) {
+						for(int i=0;i<5;i++) {
+							instrucciones--;
+						}
+						a.setCantidadInstrucciones(instrucciones);
+						System.out.println(a);
+						agregar(a.getIdProceso(), a.getEstadoProceso(), a.getPrioridad(), a.getCantidadInstrucciones(), a.getBloqueadoProceso(),
+								a.getEventoEspera(), a.getInfoAdicional(), procesosPrioridad1);
+						segmentos.add(a);
+					}
+				}
+			}
+			else {
+				//Bajar la prioridad
+				int c = a.getPrioridad()+1;
+				a.setPrioridad(c);
+				agregar(a.getIdProceso(), a.getEstadoProceso(), a.getPrioridad(), a.getCantidadInstrucciones(), a.getBloqueadoProceso(),
+						a.getEventoEspera(), a.getInfoAdicional(), procesosPrioridad2);
+			}
+			
+		}
+		contador++;
+		
+	}
 	
+	
+	
+	public boolean buscar(Procesos a, List<Procesos> segmentos) {
+		return segmentos.contains(a);
+		}	
+	public void agregar(int id,int estado, int prioridad,int cantidad,int instrucciones,int evento, int partes, List<Procesos> procesosPrioridad) {
+		procesosPrioridad.add(new Procesos(id,estado,prioridad,cantidad,instrucciones,evento,partes));
+	}
 }
 
 	

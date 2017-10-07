@@ -8,7 +8,7 @@ public class Procesos {
 	private int cantidadInstrucciones;
 	private int instruccionBloqueo;
 	private int eventoBloqueo;
-	private String infoAdicional;
+	private int infoAdicional;
 	
 	public Procesos() {
 		super();
@@ -20,7 +20,7 @@ public class Procesos {
 			int cantidadInstrucciones,
 			int bloqueadoProceso,
 			int eventoEspera,
-			String infoAdicional) {
+			int infoAdicional) {
 		super();
 		this.idProceso = idProceso;
 		this.estadoProceso = estadoProceso;
@@ -76,11 +76,12 @@ public class Procesos {
 		this.eventoBloqueo = eventoBloqueo;
 	}
 
-	public String getInfoAdicional() {
+
+	public int getInfoAdicional() {
 		return infoAdicional;
 	}
 
-	public void setInfoAdicional(String infoAdicional) {
+	public void setInfoAdicional(int infoAdicional) {
 		this.infoAdicional = infoAdicional;
 	}
 
