@@ -17,19 +17,41 @@ public class Main {
 	private BufferedReader bRLectura;
 	private String linea;
 	private String cadenaInstrucciones;
+	
 	private List<String> ids= new LinkedList<String>();
-	private List<Procesos> procesosPrioridad1= new LinkedList<Procesos>();
-	private List<Procesos> procesosPrioridad2= new LinkedList<Procesos>();
-	private List<Procesos> procesosPrioridad3= new LinkedList<Procesos>();
+	
+	//-------------TDA NUEVOS----------------
+	private List<String> tdaNuevos=new LinkedList<String>();
+	
+	//-------------TDA LISTOS----------------
+	private List<Procesos> tdaListosPrioridad1= new LinkedList<Procesos>();
+	private List<Procesos> tdaListosPrioridad2= new LinkedList<Procesos>();
+	private List<Procesos> tdaListosPrioridad3= new LinkedList<Procesos>();
+	
+	//----------TDA EJECUTANDO------------
+	private List<Procesos> tdaEjecutandoPrioridad1=new LinkedList<Procesos>();
+	private List<Procesos> tdaEjecutandoPrioridad2=new LinkedList<Procesos>();
+	private List<Procesos> tdaEjecutandoPrioridad3=new LinkedList<Procesos>();
+	
+	//-----------TDA BLOQUEDO----------
+	private List<Procesos> tdaBloqueadoPrioridad1=new LinkedList<Procesos>();
+	private List<Procesos> tdaBloqueadoPrioridad2=new LinkedList<Procesos>();
+	private List<Procesos> tdaBloqueadoPrioridad3=new LinkedList<Procesos>();
+	
+	//---------TDA TERMINANO-----------
+	private List<Procesos> tdaTerminadoPrioridad1=new LinkedList<Procesos>();
+	private List<Procesos> tdaTerminadoPrioridad2=new LinkedList<Procesos>();
+	private List<Procesos> tdaTerminadoPrioridad3=new LinkedList<Procesos>();
+	
+	//-----------TDA PROCESOS INVALIDOS Y OTROS RECURSO NECESARIOS---------------------
 	private List<ProcesosInvalido> procesosInvalidos= new LinkedList<ProcesosInvalido>();
 	private List<Procesos> segmentos= new LinkedList<Procesos>();
 
 	public Main() {
 		importarInstrucciones();
-		//infoProcesosValidos();
-		//infoProcesosInvalidos();
+		infoListos();
+		infoProcesosInvalidos();
 		ejecutar();
-		infoProcesosValidos();
 	}
 
 
@@ -37,6 +59,77 @@ public class Main {
 		new Main();
 
 	}
+	
+
+	public void ejecutar() {
+		
+		 Scanner sc = new Scanner(System.in);
+		 System.out.println("Cantidad de ciclos a ejecutar: ");
+		 int ciclos = sc.nextInt();
+	     int cantidad=0;//variable para controlar ciclo principal while
+	     int cincoCiclos=5; /*variable que controla que se cumplan 5 ciclos por 
+	     					cada segmento de ejecucion*/
+	     
+	     //-----------ESTADO DEL SIMULADOR PROCESOS EJECUNTANDOSE--------------
+	     while(cantidad<ciclos){
+	    	 //variables que permiten tener el control de los indices de las listas de prioridades
+	    	 int contador1=0;//remover cada elemento de la prioridad 1
+	    	 int contador2=0;//remover cada elemento de la prioridad 2
+	    	 int contador3=0;//remover cada elemento de la prioridad 3
+	    	 
+	    	
+	    	 if(!tdaListosPrioridad1.isEmpty()){
+	    		 Procesos a=tdaListosPrioridad1.remove(contador1);
+	    		 tdaEjecutandoPrioridad1.add(a);
+	    		 System.out.println(a);
+	    	 }
+            /*int contador = 0;//remover cada elemento de la prioridad 1
+            int b = 0;//actualizar cuantas veces se a entrado al ciclo
+            if(!procesosListosPrioridad1.isEmpty()){
+                Procesos a=procesosListosPrioridad1.remove(contador);
+
+                	if(a.getInfoAdicional()>=0 && a.getInfoAdicional() < 3) {
+                       if(buscar(a,segmentos)==false) {
+                            //No ha entrado al ciclo FOR
+					        b= a.getInfoAdicional()+1;
+					        a.setInfoAdicional(b);
+					        int instrucciones = a.getCantidadInstrucciones();
+					        if(instrucciones > 0) {
+                    			instrucciones--;
+                    			a.setCantidadInstrucciones(instrucciones);
+                                agregar(a.getIdProceso(), a.getEstadoProceso(), a.getPrioridad(), a.getCantidadInstrucciones(), a.getBloqueadoProceso(),
+				                a.getEventoEspera(), a.getInfoAdicional(), procesosListosPrioridad1);
+                                segmentos.add(a);
+					        }
+                        }
+
+                        if(a.getInfoAdicional()>=3){
+                            if(buscar(a,procesosListosPrioridad2)==false){
+                                int c = a.getPrioridad()+1;
+                                a.setPrioridad(c);
+                                agregar(a.getIdProceso(), a.getEstadoProceso(), a.getPrioridad(), a.getCantidadInstrucciones(), a.getBloqueadoProceso(),
+                                a.getEventoEspera(), a.getInfoAdicional(), procesosListosPrioridad2);
+                        }
+                    }
+                }
+            }*/
+        	/*if(!procesosPrioridad2.isEmpty()){
+            System.out.println("trabajando con la lista 2");
+            }
+
+        	if(!procesosPrioridad3.isEmpty()){
+                System.out.println("trabajando con la lista 3");
+             }
+            contador++;*/
+            cantidad++;
+            
+        }
+
+	  }
+
+
+	
+	
 	public void importarInstrucciones(){
 
 		cadenaInstrucciones="";
@@ -71,8 +164,15 @@ public class Main {
         /*Enviar todas las intrucciones en una sola linea para poder eliminar posibles saltos de lineas
         entre instrucciones*/
         String partesInstruccion[]=cadenaInstrucciones.split(";");
+        
+        //------------------ESTADO DEL SIMULADOR NUEVOS PROCESOS-------------------------
 		for (int i = 0; i < partesInstruccion.length; i++) {
-			validarInstruccion(partesInstruccion[i]);
+			tdaNuevos.add(partesInstruccion[i]);
+		}
+		
+		//----VALIDAR PROCESOS SI EL PROCESO ES VALIDO PASARLO A ESTADO DEL SIMULADOR LISTOS------
+		for (int i = 0; i < tdaNuevos.size(); i++) {
+			validarInstruccion(tdaNuevos.get(i));
 		}
 
 	}
@@ -119,6 +219,8 @@ public class Main {
 
 	public void ordenar(String partes[],String instruccion) {
 		//Validar id antes de meterlo a las listas de procesos
+		
+		//-----------VALIDACION DE ID UNICOS----------
 		String id =partes[0];
 		ids.add(id);
 		int contadorId=0;//si contadorId>=2 entonces el proceso no se podra meter en ninguna lista
@@ -128,10 +230,11 @@ public class Main {
 			}
 		}
 
+		//------------ESTADO DEL SIMULADOR PROCESOS LISTOS-------------------
 		if(contadorId<=1){
 			//Lista Prioridad 1
 			if(partes[2].equals("1")) {
-				procesosPrioridad1.add(new Procesos(
+				tdaListosPrioridad1.add(new Procesos(
 						Integer.parseInt(partes[0]),
 						1,
 						Integer.parseInt(partes[2]),
@@ -145,7 +248,7 @@ public class Main {
 
 			//Lista Prioridad 2
 			if(partes[2].equals("2")) {
-				procesosPrioridad2.add(new Procesos(
+				tdaListosPrioridad2.add(new Procesos(
 						Integer.parseInt(partes[0]),
 						1,
 						Integer.parseInt(partes[2]),
@@ -158,7 +261,7 @@ public class Main {
 
 			//Lista Prioridad 3
 			if(partes[2].equals("3")) {
-				procesosPrioridad3.add(new Procesos(
+				tdaListosPrioridad3.add(new Procesos(
 						Integer.parseInt(partes[0]),
 						1,
 						Integer.parseInt(partes[2]),
@@ -183,95 +286,45 @@ public class Main {
 
 	}
 
-
-
-	public void infoProcesosValidos(){
-		System.out.println("\n"+"------Prioridad 1-------"+"\n");
-		for (int i = 0; i < procesosPrioridad1.size(); i++) {
-			System.out.println(procesosPrioridad1.get(i));
-		}
-		System.out.println("\n"+"------Prioridad 2-------"+"\n");
-		for (int i = 0; i < procesosPrioridad2.size(); i++) {
-			System.out.println(procesosPrioridad2.get(i));
-		}
-		System.out.println("\n"+"------Prioridad 3-------"+"\n");
-		for (int i = 0; i < procesosPrioridad3.size(); i++) {
-			System.out.println(procesosPrioridad3.get(i));
-		}
+	public boolean buscar(Procesos a, List<Procesos> segmentos) {
+		return segmentos.contains(a);
 	}
-
+	
+	public void agregar(int id,int estado, int prioridad,int cantidad,int instrucciones,int evento, int partes, List<Procesos> procesosPrioridad) {
+		procesosPrioridad.add(new Procesos(id,estado,prioridad,cantidad,instrucciones,evento,partes));
+	}
+	
 	public void asignarProcesoInvalido(String instruccion,String infoAdicional){
 		procesosInvalidos.add(new ProcesosInvalido(instruccion,infoAdicional));
 	}
-
+	
+	public void infoNuevos(){
+		for (int i = 0; i < tdaNuevos.size(); i++) {
+			System.out.println(tdaNuevos.get(i)+"\n");
+		}
+	}
+	
+	public void infoListos(){
+		System.out.println("\n"+"------Prioridad 1-------"+"\n");
+		for (int i = 0; i < tdaListosPrioridad1.size(); i++) {
+			System.out.println(tdaListosPrioridad1.get(i));
+		}
+		System.out.println("\n"+"------Prioridad 2-------"+"\n");
+		for (int i = 0; i < tdaListosPrioridad2.size(); i++) {
+			System.out.println(tdaListosPrioridad2.get(i));
+		}
+		System.out.println("\n"+"------Prioridad 3-------"+"\n");
+		for (int i = 0; i < tdaListosPrioridad3.size(); i++) {
+			System.out.println(tdaListosPrioridad3.get(i));
+		}
+	}
+	
 	public void infoProcesosInvalidos(){
 		System.out.println("\n---------------Procesos Invalidos------------------\n");
 		for (int i = 0; i < procesosInvalidos.size(); i++) {
 			System.err.println(procesosInvalidos.get(i).toString());
 		}
 
-	}
-	public void ejecutar() {
-	    //System.out.println("Ejecutando el metodo ejecutar de la lista 1\n");
-		 Scanner sc = new Scanner(System.in);
-		 System.out.println("Cantidad de ciclos a ejecutar: ");
-		 int ciclos = sc.nextInt();
-	    //int ciclos = 9;
-	    int cantidad=0;
-	            while(cantidad<ciclos){
-                    int contador = 0;//remover cada elemento de la prioridad 1
-                    int b = 0;//actualizar cuantas veces se a entrado al ciclo
-                    if(!procesosPrioridad1.isEmpty()){
-                        Procesos a=procesosPrioridad1.remove(contador);
-
-                        	if(a.getInfoAdicional()>=0 && a.getInfoAdicional() < 3) {
-	                           if(buscar(a,segmentos)==false) {
-	                                //No ha entrado al ciclo FOR
-							        b= a.getInfoAdicional()+1;
-							        a.setInfoAdicional(b);
-							        int instrucciones = a.getCantidadInstrucciones();
-							        if(instrucciones > 0) {
-                            			for(int i=0;i<5;i++) {
-                            				instrucciones--;
-	                                    }
-                            			a.setCantidadInstrucciones(instrucciones);
-	                                    agregar(a.getIdProceso(), a.getEstadoProceso(), a.getPrioridad(), a.getCantidadInstrucciones(), a.getBloqueadoProceso(),
-						                a.getEventoEspera(), a.getInfoAdicional(), procesosPrioridad1);
-	                                    segmentos.add(a);
-							        }
-	                            }
-
-	                            if(a.getInfoAdicional()>=3){
-	                                if(buscar(a,procesosPrioridad2)==false){
-	                                    int c = a.getPrioridad()+1;
-	                                    a.setPrioridad(c);
-	                                    agregar(a.getIdProceso(), a.getEstadoProceso(), a.getPrioridad(), a.getCantidadInstrucciones(), a.getBloqueadoProceso(),
-	                                    a.getEventoEspera(), a.getInfoAdicional(), procesosPrioridad2);
-	                            }
-	                        }
-	                    }
-	                }
-//                	if(!procesosPrioridad2.isEmpty()){
-//                    System.out.println("trabajando con la lista 2");
-//                    }
-//
-//                	if(!procesosPrioridad3.isEmpty()){
-//	                    System.out.println("trabajando con la lista 3");
-//	                 }
-                contador++;
-                cantidad++;
-
-	            }
-
-	     }
-
-
-
-	public boolean buscar(Procesos a, List<Procesos> segmentos) {
-		return segmentos.contains(a);
-		}
-	public void agregar(int id,int estado, int prioridad,int cantidad,int instrucciones,int evento, int partes, List<Procesos> procesosPrioridad) {
-		procesosPrioridad.add(new Procesos(id,estado,prioridad,cantidad,instrucciones,evento,partes));
 	}
 }
 
