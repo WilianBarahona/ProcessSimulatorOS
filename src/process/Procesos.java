@@ -9,6 +9,7 @@ public class Procesos {
 	private int instruccionBloqueo;
 	private int eventoBloqueo;
 	private int infoAdicional;
+	private int segmentosEjecutados;
 	
 	public Procesos() {
 		super();
@@ -29,8 +30,25 @@ public class Procesos {
 		this.instruccionBloqueo = bloqueadoProceso;
 		this.eventoBloqueo = eventoEspera;
 		this.infoAdicional=infoAdicional;
+		this.segmentosEjecutados=0;
 	}
 	
+	public int getInstruccionBloqueo() {
+		return instruccionBloqueo;
+	}
+
+	public void setInstruccionBloqueo(int instruccionBloqueo) {
+		this.instruccionBloqueo = instruccionBloqueo;
+	}
+
+	public int getSegmentosEjecutados() {
+		return segmentosEjecutados;
+	}
+
+	public void setSegmentosEjecutados(int segmentosEjecutados) {
+		this.segmentosEjecutados = segmentosEjecutados;
+	}
+
 	public int getIdProceso() {
 		return idProceso;
 	}

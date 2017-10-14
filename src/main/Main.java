@@ -17,7 +17,13 @@ public class Main {
 	private BufferedReader bRLectura;
 	private String linea;
 	private String cadenaInstrucciones;
+	private Procesos procesoEjecutando;
 	
+	//tiempo para relentizar el simulador en milisegundos
+	private static final int TIEMPO_RETARDO_MS=1000;
+	private int ciclos;
+	
+	//----lista de ids de los procesos que sirve para verificar ids unicos--
 	private List<String> ids= new LinkedList<String>();
 	
 	//-------------TDA NUEVOS----------------
@@ -49,9 +55,12 @@ public class Main {
 
 	public Main() {
 		importarInstrucciones();
-		infoListos();
-		infoProcesosInvalidos();
+		//infoListos();
+		//infoProcesosInvalidos();
+		//infoListos();
 		ejecutar();
+		infoEjecutando();
+		
 	}
 
 
@@ -65,70 +74,61 @@ public class Main {
 		
 		 Scanner sc = new Scanner(System.in);
 		 System.out.println("Cantidad de ciclos a ejecutar: ");
-		 int ciclos = sc.nextInt();
+		 ciclos = sc.nextInt();
 	     int cantidad=0;//variable para controlar ciclo principal while
-	     int cincoCiclos=5; /*variable que controla que se cumplan 5 ciclos por 
+	     int segmentoCiclos=5; /*variable que controla que se cumplan 5 ciclos por 
 	     					cada segmento de ejecucion*/
+	     
+	     //variables que permiten tener el control de los indices de las listas de prioridades
+    	 int contador1=tdaListosPrioridad1.size()-1;//remover cada elemento de la prioridad 1
+    	 int contador2=tdaListosPrioridad2.size()-1;//remover cada elemento de la prioridad 2
+    	 int contador3=tdaListosPrioridad3.size()-1;//remover cada elemento de la prioridad 3
 	     
 	     //-----------ESTADO DEL SIMULADOR PROCESOS EJECUNTANDOSE--------------
 	     while(cantidad<ciclos){
-	    	 //variables que permiten tener el control de los indices de las listas de prioridades
-	    	 int contador1=0;//remover cada elemento de la prioridad 1
-	    	 int contador2=0;//remover cada elemento de la prioridad 2
-	    	 int contador3=0;//remover cada elemento de la prioridad 3
-	    	 
-	    	
 	    	 if(!tdaListosPrioridad1.isEmpty()){
-	    		 Procesos a=tdaListosPrioridad1.remove(contador1);
-	    		 tdaEjecutandoPrioridad1.add(a);
-	    		 System.out.println(a);
+	    		 System.out.println(contador1);
+	    		 procesoEjecutando=new Procesos();
+	    		 procesoEjecutando=tdaListosPrioridad1.get(contador1);//obtener el proceso de la lista de prioridad 1
+	    		 procesoEjecutando.setEstadoProceso(2);//estado del proceso en ejecucion(2)
+	    		 
+	    		 if(procesoEjecutando.getSegmentosEjecutados()>=0 && procesoEjecutando.getSegmentosEjecutados()<3){
+	    			 if (segmentoCiclos<1) {
+	    				 /*Al cumplir con un segmento de cinco ciclos hacer:
+	    				  *cambiar el contador1 en pocas palabras cambiar al siguiente proceso 
+	    				  *aumentar la cantidad de segmentos a dicho proceso
+	    				 */
+						segmentoCiclos=5;
+						procesoEjecutando.setSegmentosEjecutados(procesoEjecutando.getSegmentosEjecutados()+1);
+						
+						/*Decision necesaria para evitar una excepcion de indice=-1 de la lista
+						a cuyo indice no se puede acceder*/
+						 if (contador1==0) {
+								contador1=tdaListosPrioridad1.size()-1;
+						}else{
+							contador1--;
+						}
+						 
+					 }else {
+						 if (procesoEjecutando.getCantidadInstrucciones()>=0) {
+	    					 procesoEjecutando.setCantidadInstrucciones(procesoEjecutando.getCantidadInstrucciones()-1);
+	    					 System.out.println(procesoEjecutando.getCantidadInstrucciones());
+	    					 segmentoCiclos--;
+	    				}
+						 
+					 }  			
+	    			
+	    		 }
+	    		 
+	    		 cantidad++;
 	    	 }
-            /*int contador = 0;//remover cada elemento de la prioridad 1
-            int b = 0;//actualizar cuantas veces se a entrado al ciclo
-            if(!procesosListosPrioridad1.isEmpty()){
-                Procesos a=procesosListosPrioridad1.remove(contador);
-
-                	if(a.getInfoAdicional()>=0 && a.getInfoAdicional() < 3) {
-                       if(buscar(a,segmentos)==false) {
-                            //No ha entrado al ciclo FOR
-					        b= a.getInfoAdicional()+1;
-					        a.setInfoAdicional(b);
-					        int instrucciones = a.getCantidadInstrucciones();
-					        if(instrucciones > 0) {
-                    			instrucciones--;
-                    			a.setCantidadInstrucciones(instrucciones);
-                                agregar(a.getIdProceso(), a.getEstadoProceso(), a.getPrioridad(), a.getCantidadInstrucciones(), a.getBloqueadoProceso(),
-				                a.getEventoEspera(), a.getInfoAdicional(), procesosListosPrioridad1);
-                                segmentos.add(a);
-					        }
-                        }
-
-                        if(a.getInfoAdicional()>=3){
-                            if(buscar(a,procesosListosPrioridad2)==false){
-                                int c = a.getPrioridad()+1;
-                                a.setPrioridad(c);
-                                agregar(a.getIdProceso(), a.getEstadoProceso(), a.getPrioridad(), a.getCantidadInstrucciones(), a.getBloqueadoProceso(),
-                                a.getEventoEspera(), a.getInfoAdicional(), procesosListosPrioridad2);
-                        }
-                    }
-                }
-            }*/
-        	/*if(!procesosPrioridad2.isEmpty()){
-            System.out.println("trabajando con la lista 2");
-            }
-
-        	if(!procesosPrioridad3.isEmpty()){
-                System.out.println("trabajando con la lista 3");
-             }
-            contador++;*/
-            cantidad++;
+           
+	    	 
             
         }
 
 	  }
 
-
-	
 	
 	public void importarInstrucciones(){
 
@@ -316,6 +316,42 @@ public class Main {
 		System.out.println("\n"+"------Prioridad 3-------"+"\n");
 		for (int i = 0; i < tdaListosPrioridad3.size(); i++) {
 			System.out.println(tdaListosPrioridad3.get(i));
+		}
+	}
+	
+	public void infoEjecutando(){
+		for (int i = 0; i < tdaEjecutandoPrioridad1.size(); i++) {
+			System.out.println(tdaEjecutandoPrioridad1.get(i));
+		}
+		for (int i = 0; i < tdaEjecutandoPrioridad2.size(); i++) {
+			System.out.println(tdaEjecutandoPrioridad2.get(i));
+		}
+		for (int i = 0; i < tdaEjecutandoPrioridad3.size(); i++) {
+			System.out.println(tdaEjecutandoPrioridad3.get(i));
+		}
+	}
+	
+	public void infoBloqueados(){
+		for (int i = 0; i < tdaBloqueadoPrioridad1.size(); i++) {
+			System.out.println(tdaBloqueadoPrioridad1.get(i));
+		}
+		for (int i = 0; i < tdaBloqueadoPrioridad2.size(); i++) {
+			System.out.println(tdaBloqueadoPrioridad2.get(i));
+		}
+		for (int i = 0; i < tdaBloqueadoPrioridad3.size(); i++) {
+			System.out.println(tdaBloqueadoPrioridad2.get(i));
+		}
+	}
+	
+	public void infoTerminados(){
+		for (int i = 0; i < tdaTerminadoPrioridad1.size(); i++) {
+			System.out.println(tdaTerminadoPrioridad1.get(i));
+		}
+		for (int i = 0; i < tdaTerminadoPrioridad2.size(); i++) {
+			System.out.println(tdaTerminadoPrioridad2.get(i));
+		}
+		for (int i = 0; i < tdaTerminadoPrioridad3.size(); i++) {
+			System.out.println(tdaTerminadoPrioridad3.get(i));
 		}
 	}
 	
