@@ -107,7 +107,7 @@ public class Procesos {
 	public String toString() {
 		return "Proceso [idProceso=" + idProceso + ", estadoProceso=" + estadoProceso + ", prioridad=" + prioridad
 				+ ", cantidadInstrucciones=" + cantidadInstrucciones + ", bloqueadoProceso=" + instruccionBloqueo
-				+ ", eventoEspera=" + eventoBloqueo + ", infoAdicional=" + infoAdicional+"]" + "\n";
+				+ ", eventoEspera=" + eventoBloqueo +", segmentosEjecutados=" +segmentosEjecutados +", infoAdicional=" + infoAdicional+"]" + "\n";
 	}
 	
 
