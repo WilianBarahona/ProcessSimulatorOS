@@ -17,11 +17,10 @@ public class Main {
 	private BufferedReader bRLectura;
 	private String linea;
 	private String cadenaInstrucciones;
-	private Procesos procesoEjecutando;
 	
 	//tiempo para relentizar el simulador en milisegundos
-	private static final int TIEMPO_RETARDO_MS=1000;
-	private int ciclos;
+	private static final int TIEMPO_RETARDO_MS=9;
+	
 	
 	//----lista de ids de los procesos que sirve para verificar ids unicos--
 	private List<String> ids= new LinkedList<String>();
@@ -51,68 +50,91 @@ public class Main {
 	
 	//-----------TDA PROCESOS INVALIDOS Y OTROS RECURSO NECESARIOS---------------------
 	private List<ProcesosInvalido> procesosInvalidos= new LinkedList<ProcesosInvalido>();
-	private List<Procesos> segmentos= new LinkedList<Procesos>();
+	private List<Procesos> segmentos1= new LinkedList<Procesos>();
+	private List<Procesos> segmentos2= new LinkedList<Procesos>();
+	private List<Procesos> segmentos3= new LinkedList<Procesos>();
 
-	public Main() {
+	public Main() throws InterruptedException {
 		importarInstrucciones();
-		//infoListos();
-		//infoProcesosInvalidos();
-		//infoListos();
+		infoNuevos();
+		infoListos();
 		ejecutar();
 		infoListos();
+		infoEjecutando();
 		infoBloqueados();
+		infoTerminados();
+		
 	}
 
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws InterruptedException {
 		new Main();
 
 	}
 	
-	public void ejecutar() {
+	public void ejecutar() throws InterruptedException {
 	    //System.out.println("Ejecutando el metodo ejecutar de la lista 1\n");
 		 Scanner sc = new Scanner(System.in);
 		 System.out.println("Cantidad de ciclos a ejecutar: ");
 		 int ciclos = sc.nextInt();
-	    int cantidad=0;
+	     int cantidad=0;
             while(cantidad<ciclos){
                 int contador = 0;//remover cada elemento de la prioridad 1
                 int b = 0;//actualizar cuantas veces se a entrado al ciclo
-          
+                moverTerminadoPrioridad1();
+                moverTerminadoPrioridad2();
+                moverTerminadoPrioridad3();
        	    	 if(!tdaListosPrioridad1.isEmpty()){
-       	    		 Procesos a=tdaListosPrioridad1.remove(contador);
-	                 	if(a.getInfoAdicional()>=0 && a.getInfoAdicional() < 3) {
-	                        if(buscar(a,segmentos)==false) {
+       	    		 Procesos a1=tdaListosPrioridad1.remove(contador);
+       	    		if (tdaListosPrioridad1.size()==1) {
+       	    			eliminarUltimoPrioridad1();
+					 }
+					moverTerminadoPrioridad1();
+					
+	                 	if(a1.getInfoAdicional()>=0 && a1.getInfoAdicional() < 3) {
+	                        if(buscar(a1,segmentos1)==false) {
 	                             //No ha entrado al ciclo FOR
-							        int instrucciones = a.getCantidadInstrucciones();
-							        a.setEstadoProceso(2);
+							        int instrucciones = a1.getCantidadInstrucciones();
+							        if (instrucciones==0) {
+										a1.setEstadoProceso(4);
+									}
+							        a1.setEstadoProceso(2);
 							        if(instrucciones > 0) {
 							        	for(int i=0;i<5;i++) {
+							        		Thread.sleep(TIEMPO_RETARDO_MS);
 							        		if (i==4) {
-							        			b= a.getInfoAdicional()+1;
-										        a.setInfoAdicional(b);
+							        			b= a1.getInfoAdicional()+1;
+										        a1.setInfoAdicional(b);
 											}
-							        		a.setCantidadInstrucciones(instrucciones);
-							        		if (a.getCantidadInstrucciones()==a.getInstruccionBloqueo()) {
-												System.out.println("bloqueado");
-												a.setEstadoProceso(3);
-												moverEstadoBloqueado();
+							        		a1.setCantidadInstrucciones(instrucciones);
+							        		System.out.println("Prioridad1: "+a1.getIdProceso()+" Instruccion:"+a1.getCantidadInstrucciones());
+							        		if (a1.getCantidadInstrucciones()==a1.getInstruccionBloqueo()) {
+												a1.setEstadoProceso(3);
+												if (tdaListosPrioridad1.size()==1) {
+													eliminarUltimoPrioridad1();
+												}else {
+													moverEstadoBloqueadoPrioridad1();
+												}
+												
 												i=5;//salir del ciclo
 												instrucciones++;//dejar esta variable como estaba
 											}
+							        		
+							        		
+							        		ejecutarBloqueado();
 							        		cantidad++;
 							        		instrucciones--;
 							        	}
-							        	
-		                                 agregar(a.getIdProceso(),
-		                                		 a.getEstadoProceso(), 
-		                                		 a.getPrioridad(), 
-		                                		 a.getCantidadInstrucciones(), 
-		                                		 a.getBloqueadoProceso(),
-		                                		 a.getEventoEspera(),
-		                                		 a.getInfoAdicional(),
+							        	 
+		                                 agregar(a1.getIdProceso(),
+		                                		 a1.getEstadoProceso(), 
+		                                		 a1.getPrioridad(), 
+		                                		 a1.getCantidadInstrucciones(), 
+		                                		 a1.getBloqueadoProceso(),
+		                                		 a1.getEventoEspera(),
+		                                		 a1.getInfoAdicional(),
 		                                		 tdaListosPrioridad1);
-		                                 segmentos.add(a);
+		                                 segmentos1.add(a1);
 								        }
 	                         }
 	                        for (int i = 0; i < tdaListosPrioridad1.size(); i++) {
@@ -126,7 +148,7 @@ public class Main {
 		                                    		tdaListosPrioridad1.get(i).getCantidadInstrucciones(),
 		                                    		tdaListosPrioridad1.get(i).getBloqueadoProceso(),
 		                                    		tdaListosPrioridad1.get(i).getEventoEspera(), 
-		                                    		tdaListosPrioridad1.get(i).getInfoAdicional(), 
+		                                    		0, 
 				                                    tdaListosPrioridad2);
 		                                    tdaListosPrioridad1.remove(i);
 	                             	}	
@@ -134,71 +156,147 @@ public class Main {
 						   }
 	
                  }
+	            //ejecutarBloqueadoPrioridad1();
                 contador++;
     	    	 }else{
     	    		 if(!tdaListosPrioridad2.isEmpty()){
-    	    			 System.out.println("ejecutando lista 2");
-    	    			 
+    	    				Procesos a2=tdaListosPrioridad2.remove(contador);
+    	       	    		if (tdaListosPrioridad2.size()==1) {
+    	       	    			eliminarUltimoPrioridad2();
+    						 }
+    						moverTerminadoPrioridad2();
+    						
+    		                 	if(a2.getInfoAdicional()>=0 && a2.getInfoAdicional() < 3) {
+    		                        if(buscar(a2,segmentos2)==false) {
+    		                             //No ha entrado al ciclo FOR
+    								        int instrucciones = a2.getCantidadInstrucciones();
+    								        if (instrucciones==0) {
+												a2.setEstadoProceso(4);
+											}
+    								        a2.setEstadoProceso(2);
+    								        if(instrucciones > 0) {
+    								        	for(int i=0;i<5;i++) {
+    								        		Thread.sleep(TIEMPO_RETARDO_MS);
+    								        		if (i==4) {
+    								        			b= a2.getInfoAdicional()+1;
+    											        a2.setInfoAdicional(b);
+    												}
+    								        		a2.setCantidadInstrucciones(instrucciones);
+    								        		System.out.println("Prioridad2: "+a2.getIdProceso()+" Instruccion:"+a2.getCantidadInstrucciones());
+    								        		if (a2.getCantidadInstrucciones()==a2.getInstruccionBloqueo()) {
+    													a2.setEstadoProceso(3);
+    													if (tdaListosPrioridad2.size()==1) {
+    														eliminarUltimoPrioridad2();
+    													}else {
+    														moverEstadoBloqueadoPrioridad2();
+    													}
+    													
+    													i=5;//salir del ciclo
+    													instrucciones++;//dejar esta variable como estaba
+    												}
+    								        		
+    								        		
+    								        		ejecutarBloqueado();
+    								        		cantidad++;
+    								        		instrucciones--;
+    								        	}
+    								        	 
+    			                                 agregar(a2.getIdProceso(),
+    			                                		 a2.getEstadoProceso(), 
+    			                                		 a2.getPrioridad(), 
+    			                                		 a2.getCantidadInstrucciones(), 
+    			                                		 a2.getBloqueadoProceso(),
+    			                                		 a2.getEventoEspera(),
+    			                                		 a2.getInfoAdicional(),
+    			                                		 tdaListosPrioridad2);
+    			                                 segmentos2.add(a2);
+    									        }
+    		                         }
+    		                        for (int i = 0; i < tdaListosPrioridad2.size(); i++) {
+    			                            if(tdaListosPrioridad2.get(i).getInfoAdicional()>=3){
+    			                            	if(buscar(tdaListosPrioridad2.get(i),tdaListosPrioridad3)==false){
+    			                                    int c = tdaListosPrioridad2.get(i).getPrioridad()+1;
+    			                                    tdaListosPrioridad2.get(i).setPrioridad(c);
+    			                                    agregar(tdaListosPrioridad2.get(i).getIdProceso(), 
+    			                                    		tdaListosPrioridad2.get(i).getEstadoProceso(), 
+    			                                    		tdaListosPrioridad2.get(i).getPrioridad(), 
+    			                                    		tdaListosPrioridad2.get(i).getCantidadInstrucciones(),
+    			                                    		tdaListosPrioridad2.get(i).getBloqueadoProceso(),
+    			                                    		tdaListosPrioridad2.get(i).getEventoEspera(), 
+    			                                    		0, 
+    					                                    tdaListosPrioridad3);
+    			                                    tdaListosPrioridad2.remove(i);
+    		                             	}	
+    		                            }
+    							   }
+    		
+    	                 }
+    		             //ejecutarBloqueadoPrioridad2();
     	    			 contador++;
     	    		 }else{
     	    			 if (!tdaListosPrioridad3.isEmpty()) {
-    	    				 System.out.println("ejecutando lista 3");
-        	    			 contador++;
+    	    				 Procesos a3=tdaListosPrioridad3.remove(contador);
+    	        	    		if (tdaListosPrioridad3.size()==1) {
+    	        	    			eliminarUltimoPrioridad3();
+    	 					 }
+    	 					moverTerminadoPrioridad3();
+    	 	                        if(buscar(a3,segmentos3)==false) {
+    	 	                             //No ha entrado al ciclo FOR
+    	 							        int instrucciones = a3.getCantidadInstrucciones();
+    	 							       if (instrucciones==0) {
+												a3.setEstadoProceso(4);
+											}
+    	 							        a3.setEstadoProceso(2);
+    	 							        if(instrucciones > 0) {
+    	 							        	for(int i=0;i<5;i++) {
+    	 							        		Thread.sleep(TIEMPO_RETARDO_MS);
+    	 							        		if (i==4) {
+    	 							        			b= a3.getInfoAdicional()+1;
+    	 										        a3.setInfoAdicional(b);
+    	 											}
+    	 							        		a3.setCantidadInstrucciones(instrucciones);
+    	 							        		System.out.println("Prioridad3: "+a3.getIdProceso()+" Instruccion:"+a3.getCantidadInstrucciones());
+    	 							        		if (a3.getCantidadInstrucciones()==a3.getInstruccionBloqueo()) {
+    	 												a3.setEstadoProceso(3);
+    	 												if (tdaListosPrioridad3.size()==1) {
+    	 													eliminarUltimoPrioridad3();
+    	 												}else {
+    	 													moverEstadoBloqueadoPrioridad3();
+    	 												}
+    	 												
+    	 												i=5;//salir del ciclo
+    	 												instrucciones++;//dejar esta variable como estaba
+    	 											}
+    	 							        		
+    	 							        		
+    	 							        		ejecutarBloqueado();
+    	 							        		cantidad++;
+    	 							        		instrucciones--;
+    	 							        	}
+    	 							        	 
+    	 		                                 agregar(a3.getIdProceso(),
+    	 		                                		 a3.getEstadoProceso(), 
+    	 		                                		 a3.getPrioridad(), 
+    	 		                                		 a3.getCantidadInstrucciones(), 
+    	 		                                		 a3.getBloqueadoProceso(),
+    	 		                                		 a3.getEventoEspera(),
+    	 		                                		 a3.getInfoAdicional(),
+    	 		                                		 tdaListosPrioridad3);
+    	 		                                 segmentos3.add(a3);
+    	 								        }
+    	 	                         }
+    	                  
+    	 	             //ejecutarBloqueadoPrioridad3();
+    	                 contador++;
     	    			 }
     	    		 }
     	    	 }
+       	    	 
+       	    	 if (tdaListosPrioridad1.isEmpty() && tdaListosPrioridad2.isEmpty() && tdaListosPrioridad3.isEmpty()) {
+					cantidad=ciclos;//salir del ciclo while en caso de que las tres listas de prioridad este vacias
+				}
                     
-                    
-                    
-                    
-                    
-                    
-                    
-                    if(!tdaListosPrioridad1.isEmpty()){
-//                        Procesos a=tdaListosPrioridad1.remove(contador);
-//
-//                        	if(a.getInfoAdicional()>=0 && a.getInfoAdicional() < 3) {
-//	                           if(buscar(a,segmentos)==false) {
-//	                                //No ha entrado al ciclo FOR
-//							        b= a.getInfoAdicional()+1;
-//							        a.setInfoAdicional(b);
-//							        int instrucciones = a.getCantidadInstrucciones();
-//							        if(instrucciones > 0) {
-//							        	for(int i=0;i<5;i++) {
-//							        		cantidad++;
-//                            				instrucciones--;
-//	                                    }
-//                            			a.setCantidadInstrucciones(instrucciones);
-//	                                    agregar(a.getIdProceso(), a.getEstadoProceso(), a.getPrioridad(), a.getCantidadInstrucciones(), a.getBloqueadoProceso(),
-//						                a.getEventoEspera(), a.getInfoAdicional(), tdaListosPrioridad1);
-//	                                    segmentos.add(a);
-//							        }
-//	                            }
-//	                           for (int i = 0; i < tdaListosPrioridad1.size(); i++) {
-//		                            if(tdaListosPrioridad1.get(i).getInfoAdicional()>=3){
-//		                            	if(buscar(tdaListosPrioridad1.get(i),tdaListosPrioridad2)==false){
-//		                                    int c = tdaListosPrioridad1.get(i).getPrioridad()+1;
-//		                                    tdaListosPrioridad1.get(i).setPrioridad(c);
-//		                                    agregar(tdaListosPrioridad1.get(i).getIdProceso(), 
-//		                                    		tdaListosPrioridad1.get(i).getEstadoProceso(), 
-//		                                    		tdaListosPrioridad1.get(i).getPrioridad(), 
-//		                                    		tdaListosPrioridad1.get(i).getCantidadInstrucciones(),
-//		                                    		tdaListosPrioridad1.get(i).getBloqueadoProceso(),
-//		                                    		tdaListosPrioridad1.get(i).getEventoEspera(), 
-//		                                    		tdaListosPrioridad1.get(i).getInfoAdicional(), 
-//				                                    tdaListosPrioridad2);
-//		                                    tdaListosPrioridad1.remove(i);
-//	                                	}	
-//			                        }
-//							   }
-//
-//	                    }
-//                       contador++;
-	                }
-               
-//                cantidad++;
-
-	            }
+	         }
 
 	     }
 
@@ -371,13 +469,18 @@ public class Main {
 		procesosInvalidos.add(new ProcesosInvalido(instruccion,infoAdicional));
 	}
 	
+	
+	
+	//-------------INFORMACION DE LAS LISTAS --------------------
 	public void infoNuevos(){
+		System.out.println("-----INFO NUEVOS------------");
 		for (int i = 0; i < tdaNuevos.size(); i++) {
 			System.out.println(tdaNuevos.get(i)+"\n");
 		}
 	}
 	
 	public void infoListos(){
+		System.out.println("-----INFO LISTOS-----------");
 		System.out.println("\n"+"------Prioridad 1-------"+"\n");
 		for (int i = 0; i < tdaListosPrioridad1.size(); i++) {
 			System.out.println(tdaListosPrioridad1.get(i));
@@ -393,7 +496,7 @@ public class Main {
 	}
 	
 	public void infoEjecutando(){
-		System.out.println("\n"+"------Procesos en estado ejecutando-------"+"\n");
+		System.out.println("-----INFO EJECUTANDO-----------");
 		for (int i = 0; i < tdaListosPrioridad1.size(); i++) {
 			if(tdaListosPrioridad1.get(i).getEstadoProceso()==2) {
 				tdaEjecutandoPrioridad1.add(tdaListosPrioridad1.get(i));
@@ -423,19 +526,24 @@ public class Main {
 	}
 	
 	public void infoBloqueados(){
-		System.out.println("\n"+"------Procesos Bloqueados-------"+"\n");
+		System.out.println("-----INFO BLOQUEADOS-----------");
 		for (int i = 0; i < tdaBloqueadoPrioridad1.size(); i++) {
 			System.out.println(tdaBloqueadoPrioridad1.get(i));
 		}
 		for (int i = 0; i < tdaBloqueadoPrioridad2.size(); i++) {
 			System.out.println(tdaBloqueadoPrioridad2.get(i));
 		}
-		for (int i = 0; i < tdaBloqueadoPrioridad3.size(); i++) {
-			System.out.println(tdaBloqueadoPrioridad2.get(i));
+		
+		if (!tdaBloqueadoPrioridad3.isEmpty()) {
+			for (int i = 0; i < tdaBloqueadoPrioridad3.size(); i++) {
+				System.out.println(tdaBloqueadoPrioridad2.get(i));
+			}
 		}
+		
 	}
 	
 	public void infoTerminados(){
+		System.out.println("-----INFO TERMINADOS----------");
 		for (int i = 0; i < tdaTerminadoPrioridad1.size(); i++) {
 			System.out.println(tdaTerminadoPrioridad1.get(i));
 		}
@@ -447,16 +555,257 @@ public class Main {
 		}
 	}
 	
-	public void moverEstadoBloqueado(){
+	
+	
+	public void moverEstadoBloqueadoPrioridad1(){
 		for (int i = 0; i < tdaListosPrioridad1.size(); i++) {
-			if (tdaListosPrioridad1.get(i).getEstadoProceso()==3) {
-				Procesos p=tdaListosPrioridad1.remove(i);
-				tdaBloqueadoPrioridad1.add(p);
+            if(tdaListosPrioridad1.get(i).getEstadoProceso()==3){
+            	if(buscar(tdaListosPrioridad1.get(i),tdaBloqueadoPrioridad1)==false){
+                    agregar(tdaListosPrioridad1.get(i).getIdProceso(), 
+                    		tdaListosPrioridad1.get(i).getEstadoProceso(), 
+                    		tdaListosPrioridad1.get(i).getPrioridad(), 
+                    		tdaListosPrioridad1.get(i).getCantidadInstrucciones(),
+                    		0,
+                    		tdaListosPrioridad1.get(i).getEventoEspera(), 
+                    		tdaListosPrioridad1.get(i).getInfoAdicional(), 
+                            tdaBloqueadoPrioridad1);
+                    tdaListosPrioridad1.remove(i);
+            	}	
+            }
+		}
+	}
+	
+	public void ejecutarBloqueadoPrioridad1(){
+		for (int i = 0; i <tdaBloqueadoPrioridad1.size(); i++) {
+			if (tdaBloqueadoPrioridad1.get(i).getCantidadInstruccionesBloqueo()==0) {
+				tdaBloqueadoPrioridad1.get(i).setInstruccionBloqueo(0);
+				tdaBloqueadoPrioridad1.get(i).setEstadoProceso(2);
+				Procesos p=tdaBloqueadoPrioridad1.remove(i);
+				tdaListosPrioridad1.add(p);
 				
+			}else{
+				tdaBloqueadoPrioridad1.get(i).setCantidadInstruccionesBloqueo((tdaBloqueadoPrioridad1.get(i).getCantidadInstruccionesBloqueo()-1));
 			}
 			
 		}
 	}
+	
+	public void eliminarUltimoPrioridad1(){
+		if(tdaListosPrioridad1.get(0).getEstadoProceso()==3){
+        	if(buscar(tdaListosPrioridad1.get(0),tdaBloqueadoPrioridad1)==false){
+                agregar(tdaListosPrioridad1.get(0).getIdProceso(), 
+                		tdaListosPrioridad1.get(0).getEstadoProceso(), 
+                		tdaListosPrioridad1.get(0).getPrioridad(), 
+                		tdaListosPrioridad1.get(0).getCantidadInstrucciones(),
+                		tdaListosPrioridad1.get(0).getBloqueadoProceso(),
+                		tdaListosPrioridad1.get(0).getEventoEspera(), 
+                		tdaListosPrioridad1.get(0).getInfoAdicional(), 
+                        tdaBloqueadoPrioridad1);
+                tdaListosPrioridad1.remove(0);
+     	}	
+		
+	   }
+	}
+	
+	public void moverTerminadoPrioridad1(){
+		for (int i = 0; i < tdaListosPrioridad1.size(); i++) {
+			if (tdaListosPrioridad1.get(i).getCantidadInstrucciones()==0) {
+				if(buscar(tdaListosPrioridad1.get(i),tdaTerminadoPrioridad1)==false){
+	                agregar(tdaListosPrioridad1.get(i).getIdProceso(), 
+	                		4, 
+	                		tdaListosPrioridad1.get(i).getPrioridad(), 
+	                		0,
+	                		tdaListosPrioridad1.get(i).getBloqueadoProceso(),
+	                		tdaListosPrioridad1.get(i).getEventoEspera(), 
+	                		tdaListosPrioridad1.get(i).getInfoAdicional(), 
+	                		tdaTerminadoPrioridad1);
+	                tdaListosPrioridad1.remove(i);
+	        	}	
+			}
+        	
+		}
+	}
+	
+	
+	public void moverEstadoBloqueadoPrioridad2(){
+		for (int i = 0; i < tdaListosPrioridad2.size(); i++) {
+            if(tdaListosPrioridad2.get(i).getEstadoProceso()==3){
+            	if(buscar(tdaListosPrioridad2.get(i),tdaBloqueadoPrioridad2)==false){
+                    agregar(tdaListosPrioridad2.get(i).getIdProceso(), 
+                    		tdaListosPrioridad2.get(i).getEstadoProceso(), 
+                    		tdaListosPrioridad2.get(i).getPrioridad(), 
+                    		tdaListosPrioridad2.get(i).getCantidadInstrucciones(),
+                    		0,
+                    		tdaListosPrioridad2.get(i).getEventoEspera(), 
+                    		tdaListosPrioridad2.get(i).getInfoAdicional(), 
+                            tdaBloqueadoPrioridad2);
+                    tdaListosPrioridad2.remove(i);
+            	}	
+            }
+		}
+	}
+	
+	public void ejecutarBloqueadoPrioridad2(){
+		for (int i = 0; i <tdaBloqueadoPrioridad2.size(); i++) {
+			if (tdaBloqueadoPrioridad2.get(i).getCantidadInstruccionesBloqueo()==0) {
+				tdaBloqueadoPrioridad2.get(i).setInstruccionBloqueo(0);
+				tdaBloqueadoPrioridad2.get(i).setEstadoProceso(2);
+				Procesos p=tdaBloqueadoPrioridad2.remove(i);
+				tdaListosPrioridad2.add(p);
+				
+			}else{
+				tdaBloqueadoPrioridad2.get(i).setCantidadInstruccionesBloqueo((tdaBloqueadoPrioridad2.get(i).getCantidadInstruccionesBloqueo()-1));
+			}
+			
+		}
+	}
+	
+	public void eliminarUltimoPrioridad2(){
+		if(tdaListosPrioridad2.get(0).getEstadoProceso()==3){
+        	if(buscar(tdaListosPrioridad2.get(0),tdaBloqueadoPrioridad2)==false){
+                agregar(tdaListosPrioridad2.get(0).getIdProceso(), 
+                		tdaListosPrioridad2.get(0).getEstadoProceso(), 
+                		tdaListosPrioridad2.get(0).getPrioridad(), 
+                		tdaListosPrioridad2.get(0).getCantidadInstrucciones(),
+                		tdaListosPrioridad2.get(0).getBloqueadoProceso(),
+                		tdaListosPrioridad2.get(0).getEventoEspera(), 
+                		tdaListosPrioridad2.get(0).getInfoAdicional(), 
+                        tdaBloqueadoPrioridad2);
+                tdaListosPrioridad2.remove(0);
+     	}	
+		
+	   }
+	}
+	
+	public void moverTerminadoPrioridad2(){
+		for (int i = 0; i < tdaListosPrioridad2.size(); i++) {
+			if (tdaListosPrioridad2.get(i).getCantidadInstrucciones()==0) {
+				if(buscar(tdaListosPrioridad2.get(i),tdaTerminadoPrioridad2)==false){
+	                agregar(tdaListosPrioridad2.get(i).getIdProceso(), 
+	                		4, 
+	                		tdaListosPrioridad2.get(i).getPrioridad(), 
+	                		0,
+	                		tdaListosPrioridad2.get(i).getBloqueadoProceso(),
+	                		tdaListosPrioridad2.get(i).getEventoEspera(), 
+	                		tdaListosPrioridad2.get(i).getInfoAdicional(), 
+	                		tdaTerminadoPrioridad2);
+	                tdaListosPrioridad2.remove(i);
+	        	}	
+			}
+        	
+		}
+	}
+	
+	
+	public void moverEstadoBloqueadoPrioridad3(){
+		for (int i = 0; i < tdaListosPrioridad3.size(); i++) {
+            if(tdaListosPrioridad3.get(i).getEstadoProceso()==3){
+            	if(buscar(tdaListosPrioridad3.get(i),tdaBloqueadoPrioridad3)==false){
+                    agregar(tdaListosPrioridad3.get(i).getIdProceso(), 
+                    		tdaListosPrioridad3.get(i).getEstadoProceso(), 
+                    		tdaListosPrioridad3.get(i).getPrioridad(), 
+                    		tdaListosPrioridad3.get(i).getCantidadInstrucciones(),
+                    		tdaListosPrioridad3.get(i).getBloqueadoProceso(),
+                    		tdaListosPrioridad3.get(i).getEventoEspera(), 
+                    		tdaListosPrioridad3.get(i).getInfoAdicional(), 
+                            tdaBloqueadoPrioridad3);
+                    tdaListosPrioridad3.remove(i);
+            	}	
+            }
+		}
+	}
+	
+	public void ejecutarBloqueadoPrioridad3(){
+		for (int i = 0; i <tdaBloqueadoPrioridad3.size(); i++) {
+			if (tdaBloqueadoPrioridad3.get(i).getCantidadInstruccionesBloqueo()==0) {
+				tdaBloqueadoPrioridad3.get(i).setInstruccionBloqueo(0);
+				tdaBloqueadoPrioridad3.get(i).setEstadoProceso(2);
+				Procesos p=tdaBloqueadoPrioridad3.remove(i);
+				tdaListosPrioridad3.add(p);
+				
+			}else{
+				tdaBloqueadoPrioridad3.get(i).setCantidadInstruccionesBloqueo((tdaBloqueadoPrioridad3.get(i).getCantidadInstruccionesBloqueo()-1));
+			}
+			
+		}
+	}
+	
+	public void ejecutarBloqueado(){
+		for (int i = 0; i <tdaBloqueadoPrioridad1.size(); i++) {
+			if (tdaBloqueadoPrioridad1.get(i).getCantidadInstruccionesBloqueo()==0) {
+				tdaBloqueadoPrioridad1.get(i).setInstruccionBloqueo(0);
+				tdaBloqueadoPrioridad1.get(i).setEstadoProceso(2);
+				Procesos p=tdaBloqueadoPrioridad1.remove(i);
+				tdaListosPrioridad1.add(p);
+				
+			}else{
+				tdaBloqueadoPrioridad1.get(i).setCantidadInstruccionesBloqueo((tdaBloqueadoPrioridad1.get(i).getCantidadInstruccionesBloqueo()-1));
+			}
+			
+		}
+		for (int i = 0; i <tdaBloqueadoPrioridad2.size(); i++) {
+			if (tdaBloqueadoPrioridad2.get(i).getCantidadInstruccionesBloqueo()==0) {
+				tdaBloqueadoPrioridad2.get(i).setInstruccionBloqueo(0);
+				tdaBloqueadoPrioridad2.get(i).setEstadoProceso(2);
+				Procesos p=tdaBloqueadoPrioridad2.remove(i);
+				tdaListosPrioridad2.add(p);
+				
+			}else{
+				tdaBloqueadoPrioridad2.get(i).setCantidadInstruccionesBloqueo((tdaBloqueadoPrioridad2.get(i).getCantidadInstruccionesBloqueo()-1));
+			}
+			
+		}
+		
+		for (int i = 0; i <tdaBloqueadoPrioridad3.size(); i++) {
+			if (tdaBloqueadoPrioridad3.get(i).getCantidadInstruccionesBloqueo()==0) {
+				tdaBloqueadoPrioridad3.get(i).setInstruccionBloqueo(0);
+				tdaBloqueadoPrioridad3.get(i).setEstadoProceso(2);
+				Procesos p=tdaBloqueadoPrioridad3.remove(i);
+				tdaListosPrioridad3.add(p);
+				
+			}else{
+				tdaBloqueadoPrioridad3.get(i).setCantidadInstruccionesBloqueo((tdaBloqueadoPrioridad3.get(i).getCantidadInstruccionesBloqueo()-1));
+			}
+			
+		}
+	}
+	
+	public void eliminarUltimoPrioridad3(){
+		if(tdaListosPrioridad3.get(0).getEstadoProceso()==3){
+        	if(buscar(tdaListosPrioridad3.get(0),tdaBloqueadoPrioridad3)==false){
+                agregar(tdaListosPrioridad3.get(0).getIdProceso(), 
+                		tdaListosPrioridad3.get(0).getEstadoProceso(), 
+                		tdaListosPrioridad3.get(0).getPrioridad(), 
+                		tdaListosPrioridad3.get(0).getCantidadInstrucciones(),
+                		tdaListosPrioridad3.get(0).getBloqueadoProceso(),
+                		tdaListosPrioridad3.get(0).getEventoEspera(), 
+                		tdaListosPrioridad3.get(0).getInfoAdicional(), 
+                        tdaBloqueadoPrioridad3);
+                tdaListosPrioridad3.remove(0);
+     	}	
+		
+	   }
+	}
+	
+	public void moverTerminadoPrioridad3(){
+		for (int i = 0; i < tdaListosPrioridad3.size(); i++) {
+			if (tdaListosPrioridad3.get(i).getCantidadInstrucciones()==0) {
+				if(buscar(tdaListosPrioridad3.get(i),tdaTerminadoPrioridad3)==false){
+	                agregar(tdaListosPrioridad3.get(i).getIdProceso(), 
+	                		4, 
+	                		tdaListosPrioridad3.get(i).getPrioridad(), 
+	                		0,
+	                		tdaListosPrioridad3.get(i).getBloqueadoProceso(),
+	                		tdaListosPrioridad3.get(i).getEventoEspera(), 
+	                		tdaListosPrioridad3.get(i).getInfoAdicional(), 
+	                		tdaTerminadoPrioridad3);
+	                tdaListosPrioridad3.remove(i);
+	        	}	
+			}
+        	
+		}
+	}
+	
 	
 	public void infoProcesosInvalidos(){
 		System.out.println("\n---------------Procesos Invalidos------------------\n");

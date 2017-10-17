@@ -8,8 +8,10 @@ public class Procesos {
 	private int cantidadInstrucciones;
 	private int instruccionBloqueo;
 	private int eventoBloqueo;
+	private int cantidadInstruccionesBloqueo;
 	private int infoAdicional;
 	private int segmentosEjecutados;
+	private boolean instanciado=false;
 	
 	public Procesos() {
 		super();
@@ -31,8 +33,27 @@ public class Procesos {
 		this.eventoBloqueo = eventoEspera;
 		this.infoAdicional=infoAdicional;
 		this.segmentosEjecutados=0;
+		if (!instanciado) {
+			if (eventoEspera==3) {
+				this.cantidadInstruccionesBloqueo=13;
+			}
+			if (eventoEspera==5) {
+				this.cantidadInstruccionesBloqueo=27;
+			}
+		}
+		this.instanciado=true;
 	}
 	
+	
+	
+	public int getCantidadInstruccionesBloqueo() {
+		return cantidadInstruccionesBloqueo;
+	}
+
+	public void setCantidadInstruccionesBloqueo(int cantidadInstruccionesBloqueo) {
+		this.cantidadInstruccionesBloqueo = cantidadInstruccionesBloqueo;
+	}
+
 	public int getInstruccionBloqueo() {
 		return instruccionBloqueo;
 	}
@@ -107,7 +128,7 @@ public class Procesos {
 	public String toString() {
 		return "Proceso [idProceso=" + idProceso + ", estadoProceso=" + estadoProceso + ", prioridad=" + prioridad
 				+ ", cantidadInstrucciones=" + cantidadInstrucciones + ", bloqueadoProceso=" + instruccionBloqueo
-				+ ", eventoEspera=" + eventoBloqueo +", segmentosEjecutados=" +segmentosEjecutados +", infoAdicional=" + infoAdicional+"]" + "\n";
+				+ ", eventoEspera=" + eventoBloqueo   +", infoAdicional=" + infoAdicional+", CantidadInstruccionBloqueo="+ cantidadInstruccionesBloqueo+"]" + "\n";
 	}
 	
 
