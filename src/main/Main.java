@@ -17,9 +17,10 @@ public class Main {
 	private BufferedReader bRLectura;
 	private String linea;
 	private String cadenaInstrucciones;
+	private int aceptarInstrucciones=10;//sirve para validar que solo hayan 10 procesos en el simulador
 	
 	//tiempo para relentizar el simulador en milisegundos
-	private static final int TIEMPO_RETARDO_MS=9;
+	private static final int TIEMPO_RETARDO_MS=250;
 	
 	
 	//----lista de ids de los procesos que sirve para verificar ids unicos--
@@ -389,62 +390,66 @@ public class Main {
 	}
 
 	public void ordenar(String partes[],String instruccion) {
-		//Validar id antes de meterlo a las listas de procesos
+		if (aceptarInstrucciones>0) {
+			//Validar id antes de meterlo a las listas de procesos
+			
+			//-----------VALIDACION DE ID UNICOS----------
+			String id =partes[0];
+			ids.add(id);
+			int contadorId=0;//si contadorId>=2 entonces el proceso no se podra meter en ninguna lista
+			for (int i = 0; i < ids.size(); i++) {
+				if (id.equals(ids.get(i))) {
+					contadorId++;
+				}
+			}
+
+			//------------ESTADO DEL SIMULADOR PROCESOS LISTOS-------------------
+			if(contadorId<=1){
+				//Lista Prioridad 1
+				if(partes[2].equals("1")) {
+					tdaListosPrioridad1.add(new Procesos(
+							Integer.parseInt(partes[0]),
+							1,
+							Integer.parseInt(partes[2]),
+							Integer.parseInt(partes[3]),
+							Integer.parseInt(partes[4]),
+							Integer.parseInt(partes[5]),
+							0
+					 ));
+
+				}
+
+				//Lista Prioridad 2
+				if(partes[2].equals("2")) {
+					tdaListosPrioridad2.add(new Procesos(
+							Integer.parseInt(partes[0]),
+							1,
+							Integer.parseInt(partes[2]),
+							Integer.parseInt(partes[3]),
+							Integer.parseInt(partes[4]),
+							Integer.parseInt(partes[5]),
+							0
+					 ));
+				}
+
+				//Lista Prioridad 3
+				if(partes[2].equals("3")) {
+					tdaListosPrioridad3.add(new Procesos(
+							Integer.parseInt(partes[0]),
+							1,
+							Integer.parseInt(partes[2]),
+							Integer.parseInt(partes[3]),
+							Integer.parseInt(partes[4]),
+							Integer.parseInt(partes[5]),
+							0
+					 ));
+				}
+			}else{
+				asignarProcesoInvalido(instruccion,"id repetido");
+			}
+		}
 		
-		//-----------VALIDACION DE ID UNICOS----------
-		String id =partes[0];
-		ids.add(id);
-		int contadorId=0;//si contadorId>=2 entonces el proceso no se podra meter en ninguna lista
-		for (int i = 0; i < ids.size(); i++) {
-			if (id.equals(ids.get(i))) {
-				contadorId++;
-			}
-		}
-
-		//------------ESTADO DEL SIMULADOR PROCESOS LISTOS-------------------
-		if(contadorId<=1){
-			//Lista Prioridad 1
-			if(partes[2].equals("1")) {
-				tdaListosPrioridad1.add(new Procesos(
-						Integer.parseInt(partes[0]),
-						1,
-						Integer.parseInt(partes[2]),
-						Integer.parseInt(partes[3]),
-						Integer.parseInt(partes[4]),
-						Integer.parseInt(partes[5]),
-						0
-				 ));
-
-			}
-
-			//Lista Prioridad 2
-			if(partes[2].equals("2")) {
-				tdaListosPrioridad2.add(new Procesos(
-						Integer.parseInt(partes[0]),
-						1,
-						Integer.parseInt(partes[2]),
-						Integer.parseInt(partes[3]),
-						Integer.parseInt(partes[4]),
-						Integer.parseInt(partes[5]),
-						0
-				 ));
-			}
-
-			//Lista Prioridad 3
-			if(partes[2].equals("3")) {
-				tdaListosPrioridad3.add(new Procesos(
-						Integer.parseInt(partes[0]),
-						1,
-						Integer.parseInt(partes[2]),
-						Integer.parseInt(partes[3]),
-						Integer.parseInt(partes[4]),
-						Integer.parseInt(partes[5]),
-						0
-				 ));
-			}
-		}else{
-			asignarProcesoInvalido(instruccion,"id repetido");
-		}
+		aceptarInstrucciones--;
 
 
 
@@ -475,7 +480,7 @@ public class Main {
 	public void infoNuevos(){
 		System.out.println("-----INFO NUEVOS------------");
 		for (int i = 0; i < tdaNuevos.size(); i++) {
-			System.out.println(tdaNuevos.get(i)+"\n");
+			System.out.println((i+1)+". "+tdaNuevos.get(i)+"\n");
 		}
 	}
 	
