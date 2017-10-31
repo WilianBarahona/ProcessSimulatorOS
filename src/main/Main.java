@@ -88,8 +88,9 @@ public class Main {
                 moverTerminadoPrioridad1();
                 moverTerminadoPrioridad2();
                 moverTerminadoPrioridad3();
-
-
+                if (tdaListosPrioridad1.size()==1) {
+   	    			eliminarUltimoPrioridad1();
+				 }
                 //EJECUTAR DE PRIORIDAD 1 A PRIORIDAD 3
        	    	 if(!tdaListosPrioridad1.isEmpty()){
        	    		 Procesos a1=tdaListosPrioridad1.remove(contador);
@@ -176,7 +177,7 @@ public class Main {
     	       	    		if (tdaListosPrioridad2.size()==1) {
     	       	    			eliminarUltimoPrioridad2();
     						 }
-    						moverTerminadoPrioridad2();
+    						 moverTerminadoPrioridad2();
 
     		                 	if(a2.getInfoAdicional()>=0 && a2.getInfoAdicional() < 3) {
     		                        if(buscar(a2,segmentos2)==false) {
@@ -313,10 +314,10 @@ public class Main {
     	    		 }
     	    	 }
 
-
-
-
        	    	 /*//TEST EJECTURA DE PRIORIDAD 3 A PRIORIDAD 1
+       	    	 if (tdaListosPrioridad3.size()==1) {
+   	    			eliminarUltimoPrioridad1();
+				 }
        	    	 if(!tdaListosPrioridad3.isEmpty()){
        	    		 Procesos a1=tdaListosPrioridad3.remove(contador);
        	    		if (tdaListosPrioridad3.size()==1) {
@@ -541,7 +542,13 @@ public class Main {
 
 
        	    	 if (tdaListosPrioridad1.isEmpty() && tdaListosPrioridad2.isEmpty() && tdaListosPrioridad3.isEmpty()) {
-					cantidad=ciclos;//salir del ciclo while en caso de que las tres listas de prioridad este vacias
+       	    		 if (tdaBloqueadoPrioridad1.isEmpty() && tdaBloqueadoPrioridad2.isEmpty() && tdaBloqueadoPrioridad3.isEmpty()) {
+       	    			cantidad=ciclos;//salir del ciclo while en caso de que las tres listas de prioridad este vacias
+					}else {
+						ejecutarBloqueado();
+						cantidad++;
+					}
+					
 				}
 
 	         }
